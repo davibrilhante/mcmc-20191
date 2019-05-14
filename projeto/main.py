@@ -43,10 +43,18 @@ class Object:
     def setRandomCorners(self,n):
         
 class Channel:
+    '''
+    Premisses:
+    - There are K paths
+    - Time invariant gain
+    - Each scattered path (in a given angle theta) has an delay
+    - Received power and antenna gain pattern are functions of angle theta
+    '''
     def __init__(self):
         self.model = 'LOG_NORMAL_NO_SHADOW'
     def setType(self,channelType):
         self.model = channelType
+    #def pathLoss(self):
     def linkBudget(tx,rx,los):
         if self.model == 'LOG_NORMAL_NO_SHADOW':
             if los==True:
