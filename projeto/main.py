@@ -51,7 +51,10 @@ class Channel:
     - Received power and antenna gain pattern are functions of angle theta
     '''
     def __init__(self):
-        self.model = 'LOG_NORMAL_NO_SHADOW'
+        #path loss model
+        self.largeScale = 'LOG_NORMAL_NO_SHADOW'
+        #fading model
+        self.smallScale = ''
     def setType(self,channelType):
         self.model = channelType
     #def pathLoss(self):
