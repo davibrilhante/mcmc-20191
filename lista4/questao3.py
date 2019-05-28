@@ -3,10 +3,19 @@ from numpy import dot as mult
 from numpy import array as array
 from matplotlib import pyplot as plt
 
+def totalVarDist(alpha,beta):
+    res=0
+    if len(alpha)==len(beta):
+        for i,j in zip(alpha, beta):
+            res += abs(i-j)
+        return res/2
+    else:
+        print("Arrays length does not match!")
+
 n = 1024
 sqr = int(math.sqrt(n))
 mixtureTime = 500
-pi0 = [1] + [0 for i in range(n-1)]
+pi0 = array([1] + [0 for i in range(n-1)])
 
 ################## ANEL ###########################
 piAnel = array([1/n for i in range(n)])
@@ -23,7 +32,7 @@ piArv[0] = 1/(n-1)
 piRet = [0 for i in range(n)]
 pRet = [[0 for j in range(n)] for i in range(n)]
 quinas = [0,sqr,n-sqr,n-1]
-den2 = 4*n*(n-1)
+den2 = 2*(2*n - 2*sqr)
 
 for i in range(n):
         pAnel[i][i] = 0.5
@@ -44,7 +53,7 @@ for i in range(n):
                 pRet[i][i+sqr] = 0.25
             if i==0 or i==n-sqr:
                 pRet[i][i+1] = 0.25
-            if i==sqr-n or i==n-1:
+            if i==n-sqr or i==n-1:
                 pRet[i][i-sqr] = 0.25
             if i==sqr-1 or i==n-1:
                 pRet[i][i-1] = 0.25
@@ -85,41 +94,44 @@ for i in range(n):
     if i == 0:
         pArv[i][i+1]=1/4
         pArv[i][i+2]=1/4
-    elif i> math.pow(2,base-2):
+    elif i>=(math.pow(2,base-1)-1):
         piArv[i]=1/den1
-        pArv[i][int(i/2)]=1/2
+        if i%2 == 0:
+            pArv[i][int(i/2)-1]=1/2
+        else:
+            pArv[i][int(i/2)]=1/2
     else:
         piArv[i]=3/den1
-        pArv[i][int(i/2)]=1/6
+        if i%2 == 0:
+            pArv[i][int(i/2)-1]=1/6
+        else:
+            pArv[i][int(i/2)]=1/6
         pArv[i][(2*i)+1]=1/6
         pArv[i][(2*i)+2]=1/6
 
 
+piAnel = array(piAnel)
 piArv = array(piArv)
-
 piRet = array(piRet)
 
-pi1 = mult(pi0,pAnel)
-piTAnel = pi1
-resAnel = [sum(abs(piTAnel - piAnel))]
+piTAnel = pi0.dot(pAnel)
+resAnel = [totalVarDist(piTAnel,piAnel)]
 
-pi1 = mult(pi0,pRet)
-piTRet = pi1
-resRet = [sum(abs(piTRet - piRet))]
+piTRet = pi0.dot(pRet)
+resRet = [totalVarDist(piTRet,piRet)]
 
-pi1 = mult(pi0,pArv)
-piTArv = pi1
-resArv = [sum(abs(piTArv - piArv))]
+piTArv = pi0.dot(pArv)
+resArv = [totalVarDist(piTArv,piArv)]
 
 for t in range(mixtureTime-1):
-    piTAnel = mult(piTAnel, pAnel)
-    resAnel.append(sum(abs(piTAnel-piAnel)))
+    piTAnel = piTAnel.dot(pAnel)
+    resAnel.append(totalVarDist(piTAnel,piAnel))
 
-    piTRet = mult(piTRet, pRet)
-    resRet.append(sum(abs(piTRet-piRet)))
+    piTRet = piTRet.dot(pRet)
+    resRet.append(totalVarDist(piTRet,piRet))
 
-    piTArv = mult(piTArv, pArv)
-    resArv.append(sum(abs(piTArv-piArv)))
+    piTArv = piTArv.dot(pArv)
+    resArv.append(totalVarDist(piTArv,piArv))
 
 print(piTAnel)
 print(resAnel)
@@ -129,5 +141,5 @@ plt.loglog(range(mixtureTime), resAnel,label='Anel')
 plt.loglog(range(mixtureTime), resRet,label='Reticulado')
 plt.loglog(range(mixtureTime), resArv,label='Arvore')
 plt.legend()
-plt.savefig('lista4-q3.png')
+plt.savefig('lista4-q3-1.png')
 plt.show()

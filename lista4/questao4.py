@@ -11,36 +11,34 @@ def totalVarDist(alpha,beta):
         return res/2
     else:
         print("Arrays length does not match!")
-
-N = [16]#,64,128]#[10,50,100]#,300,700,1000,3000,5000,10000]
+#[[226, 3634,58158], [77, 383,1694], [31, 76,125]]
+N = [256,1024]#[10,50,100]#,300,700,1000,3000,5000,10000]
 T = [[],[],[]]
-epsilon=0.0003
-#mixtureTime = 500
+epsilon=0.0001
 
 for n in N:
     sqr = int(math.sqrt(n))
     pi0 = [1] + [0 for i in range(n-1)]
     pi0 = array(pi0)
     t = [1,1,1]
-    condition= False
+    condition=[False,False,False]
 
     ################## ANEL ###########################
     piAnel = array([1/n for i in range(n)])
     pAnel = [[0 for j in range(n)] for i in range(n)]
 
     ################# ARVORE ##########################
-    den1 = 2*(n-1)
-    piArv = [2/den1]+[0 for i in range(n-1)]
-    pArv = [[0 for j in range(n)] for i in range(n)]
-    pArv[0] = [0.5, 0.25, 0.25]+[0 for i in range(n-3)]
-    piArv[0] = 1/(n-1)
+    den1 = 2*(n-2)
+    piArv = [2/den1]+[0 for i in range(n-2)]
+    pArv = [[0 for j in range(n-1)] for i in range(n-1)]
+    pArv[0] = [0.5, 0.25, 0.25]+[0 for i in range(n-4)]
+    piArv[0] = 1/(n-2)
 
     ############### RETICULADO ########################
     piRet = [0 for i in range(n)]
     pRet = [[0 for j in range(n)] for i in range(n)]
     quinas = [0,sqr-1,n-sqr,n-1]
-    den2 = 4*n*(n-1)
-    print(quinas)
+    den2 = 2*(2*n - 2*sqr)
 
     for i in range(n):
             pAnel[i][i] = 0.5
@@ -94,88 +92,89 @@ for n in N:
                 pRet[i][i+sqr] = 1/8
                 pRet[i][i-sqr] = 1/8
 
-    print(pRet)                
-    print(piRet)
-
     base = math.log(n,2)
-    for i in range(n):
+    for i in range(n-1):
         pArv[i][i]=1/2
         if i == 0:
             pArv[i][i+1]=1/4
             pArv[i][i+2]=1/4
-        elif i> math.pow(2,base-2):
+        elif i>=(math.pow(2,base-1)-1):
             piArv[i]=1/den1
-            pArv[i][int(i/2)]=1/2
+            if i%2 == 0:
+                pArv[i][int(i/2)-1]=1/2
+            else:
+                pArv[i][int(i/2)]=1/2
         else:
             piArv[i]=3/den1
-            pArv[i][int(i/2)]=1/6
+            if i%2 == 0:
+                pArv[i][int(i/2)-1]=1/6
+            else:
+                pArv[i][int(i/2)]=1/6
             pArv[i][(2*i)+1]=1/6
             pArv[i][(2*i)+2]=1/6
+
 
 
     piArv = array(piArv)
 
     piRet = array(piRet)
 
-    pi1 = mult(pi0,pAnel)
-    piTAnel = pi1
-    resAnel = sum(abs(piTAnel - piAnel))
+    piTAnel = pi0.dot(pAnel)
+    resAnel = totalVarDist(piTAnel,piAnel)
 
-    pi1 = pi0.dot(pRet) #mult(pi0,pRet)
-    piTRet = pi1
-    resRet = totalVarDist(piTRet,piRet)#sum(abs(piTRet - piRet))
-    oldRes = resRet
-    print(resRet)
+    piTRet = pi0.dot(pRet)
+    resRet = totalVarDist(piTRet,piRet)
     
-    pi1 = mult(pi0,pArv)
-    piTArv = pi1
-    resArv = sum(abs(piTArv - piArv))
+    pi0 = array([1] + [0 for i in range(n-2)])
+    piTArv = pi0.dot(pArv)
+    resArv = totalVarDist(piTArv,piArv)
 
-    #for t in range(mixtureTime-1):
-    while condition!=True:
-        '''
-        if resAnel > epsilon:
-            condition=False
-            piTAnel = mult(piTAnel, pAnel)
-            resAnel = sum(abs(piTAnel-piAnel))
+    while (condition[0]!=True) or (condition[1]!=True) or (condition[2]!=True):
+        if resAnel >= epsilon:
+            piTAnel = piTAnel.dot(pAnel)
+            resAnel = totalVarDist(piTAnel,piAnel)
+            condition[0]=False
             t[0]+=1
+            if t[0]%100==0:
+                print(t[0],resAnel)
         else: 
-            condition=True
-        '''
-        piTRet = piTRet.dot(pRet)#mult(piTRet, pRet)
-        resRet = totalVarDist(piTRet,piRet) #sum(abs(piTRet-piRet))/2
-        if t[1]%5==0:
-            print(t[1],piTRet,resRet,oldRes)#resRet)
-        if resRet >= epsilon:# and (oldRes >= resRet):
-            #oldRes = resRet 
-            condition=False
+            print("Anel",t[0],resAnel)
+            condition[0]=True
+
+        if resRet >= epsilon:
+            piTRet = piTRet.dot(pRet)
+            resRet = totalVarDist(piTRet,piRet)
+            condition[1]=False
             t[1] += 1
         else:
-            condition=True
-        #print(t[1],piTRet,resRet)#resRet)
-        '''
-        if resArv > epsilon: 
-            condition=False
+            print("Ret",t[1],resRet)
+            condition[1]=True
+
+        if resArv >= epsilon: 
             piTArv = mult(piTArv, pArv)
-            resArv = sum(abs(piTArv-piArv))
+            resArv = totalVarDist(piTArv,piArv)
+            condition[2]=False
             t[2]+=1
+            if t[2]%100==0:
+                print(t[2],resArv)
         else: 
-            condition=True
-        '''
-    #T[0].append(t[0])
+            print("Arv",t[2],resArv)
+            condition[2]=True
+
+    T[0].append(t[0])
     T[1].append(t[1])
-    #T[2].append(t[2])
+    T[2].append(t[2])
     
     print(n," Ok!")
 
-
-print(piTAnel)
-print(resAnel)
-
+print(T)
 plt.grid(True,which="both",ls="-")
-plt.loglog(T[0],label='Anel')
-#plt.loglog(T[1],label='Reticulado')
-plt.loglog(T[2],label='Arvore')
+#plt.plot(range(len(T[0])),T[0],label='Anel')
+#plt.plot(range(len(T[1])),T[1],label='Reticulado')
+#plt.plot(range(len(T[2])),T[2],label='Arvore')
+plt.semilogy(range(len(T[0])),T[0],label='Anel')
+plt.semilogy(range(len(T[1])),T[1],label='Reticulado')
+plt.semilogy(range(len(T[2])),T[2],label='Arvore')
 plt.legend()
 plt.savefig('lista4-q3.png')
 plt.show()
