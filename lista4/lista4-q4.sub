@@ -1,0 +1,11 @@
+universe = vanilla
+executable = questao4.py
+output = $(process).out
+error =  $(process).err
+log = $(process).log
+
+arguments = "4096"
+queue 
+
+arguments = "16384"
+queue 

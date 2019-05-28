@@ -1,0 +1,62 @@
+000 (158370.000.000) 05/28 02:26:34 Job submitted from host: <10.0.0.1:9618?addrs=10.0.0.1-9618&noUDP&sock=2231851_ba21_3>
+...
+001 (158370.000.000) 05/28 02:26:36 Job executing on host: <10.0.0.7:9618?addrs=10.0.0.7-9618&noUDP&sock=30030_a922_3>
+...
+007 (158370.000.000) 05/28 02:26:36 Shadow exception!
+	Error from slot1@node07: Failed to execute '/var/lib/condor/execute/dir_28085/condor_exec.exe' with arguments 4096: (errno=8: 'Exec format error')
+	0  -  Run Bytes Sent By Job
+	5259  -  Run Bytes Received By Job
+...
+012 (158370.000.000) 05/28 02:26:36 Job was held.
+	Error from slot1@node07: Failed to execute '/var/lib/condor/execute/dir_28085/condor_exec.exe' with arguments 4096: (errno=8: 'Exec format error')
+	Code 6 Subcode 8
+...
+009 (158370.000.000) 05/28 02:27:32 Job was aborted by the user.
+	via condor_rm (by user dbrilhante)
+...
+000 (158371.000.000) 05/28 02:29:01 Job submitted from host: <10.0.0.1:9618?addrs=10.0.0.1-9618&noUDP&sock=2231851_ba21_3>
+...
+001 (158371.000.000) 05/28 02:29:03 Job executing on host: <10.0.0.7:9618?addrs=10.0.0.7-9618&noUDP&sock=30030_a922_3>
+...
+006 (158371.000.000) 05/28 02:29:11 Image size of job updated: 105328
+	97  -  MemoryUsage of job (MB)
+	98980  -  ResidentSetSize of job (KB)
+...
+000 (158372.000.000) 05/28 02:31:01 Job submitted from host: <10.0.0.1:9618?addrs=10.0.0.1-9618&noUDP&sock=2231851_ba21_3>
+...
+001 (158372.000.000) 05/28 02:31:45 Job executing on host: <10.0.0.7:9618?addrs=10.0.0.7-9618&noUDP&sock=30030_a922_3>
+...
+006 (158372.000.000) 05/28 02:31:54 Image size of job updated: 13596
+	10  -  MemoryUsage of job (MB)
+	9400  -  ResidentSetSize of job (KB)
+...
+004 (158372.000.000) 05/28 02:32:26 Job was evicted.
+	(0) Job was not checkpointed.
+		Usr 0 00:00:01, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	3798  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated 
+	   Cpus                 :                 1         1 
+	   Disk (KB)            :       41        4  54693920 
+	   Memory (MB)          :       10        1       986 
+...
+009 (158372.000.000) 05/28 02:32:26 Job was aborted by the user.
+	via condor_rm (by user dbrilhante)
+...
+006 (158371.000.000) 05/28 02:34:13 Image size of job updated: 445228
+	434  -  MemoryUsage of job (MB)
+	444340  -  ResidentSetSize of job (KB)
+...
+006 (158371.000.000) 05/28 02:39:12 Image size of job updated: 477548
+	467  -  MemoryUsage of job (MB)
+	477192  -  ResidentSetSize of job (KB)
+...
+006 (158371.000.000) 05/28 02:44:13 Image size of job updated: 477548
+	470  -  MemoryUsage of job (MB)
+	480888  -  ResidentSetSize of job (KB)
+...
+006 (158371.000.000) 05/28 02:54:13 Image size of job updated: 539548
+	527  -  MemoryUsage of job (MB)
+	539184  -  ResidentSetSize of job (KB)
+...

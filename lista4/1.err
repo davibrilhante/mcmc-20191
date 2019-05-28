@@ -1,0 +1,10 @@
+Unable to init server: Could not connect: Connection refused
+Unable to init server: Could not connect: Connection refused
+
+(condor_exec.exe:28112): Gdk-CRITICAL **: 05:29:10.111: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+
+(condor_exec.exe:28112): Gdk-CRITICAL **: 05:29:10.114: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+Traceback (most recent call last):
+  File "/var/lib/condor/execute/dir_28104/condor_exec.exe", line 125, in <module>
+    piTAnel = pi0.dot(pAnel)
+MemoryError

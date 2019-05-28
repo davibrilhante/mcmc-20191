@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import math
 from numpy import dot as mult
 from numpy import array as array
@@ -14,7 +16,7 @@ def totalVarDist(alpha,beta):
 
 n = 1024
 sqr = int(math.sqrt(n))
-mixtureTime = 500
+mixtureTime = 10000
 pi0 = array([1] + [0 for i in range(n-1)])
 
 ################## ANEL ###########################
@@ -132,9 +134,6 @@ for t in range(mixtureTime-1):
 
     piTArv = piTArv.dot(pArv)
     resArv.append(totalVarDist(piTArv,piArv))
-
-print(piTAnel)
-print(resAnel)
 
 plt.grid(True,which="both",ls="-")
 plt.loglog(range(mixtureTime), resAnel,label='Anel')

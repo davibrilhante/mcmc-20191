@@ -1,0 +1,7 @@
+universe = vanilla
+executable = questao3.py
+output = questao3/$(process).out
+error =  questao3/$(process).err
+log = questao3/process).log
+
+queue 

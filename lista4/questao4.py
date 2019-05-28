@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import math
+from sys import argv
 from numpy import dot as mult
 from numpy import array as array
 from matplotlib import pyplot as plt
@@ -12,7 +15,7 @@ def totalVarDist(alpha,beta):
     else:
         print("Arrays length does not match!")
 #[[226, 3634,58158], [77, 383,1694], [31, 76,125]]
-N = [256,1024]#[10,50,100]#,300,700,1000,3000,5000,10000]
+N = [int(argv[1])]#[256,1024]#[10,50,100]#,300,700,1000,3000,5000,10000]
 T = [[],[],[]]
 epsilon=0.0001
 

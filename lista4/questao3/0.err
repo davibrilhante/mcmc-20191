@@ -1,0 +1,6 @@
+Unable to init server: Could not connect: Connection refused
+Unable to init server: Could not connect: Connection refused
+
+(condor_exec.exe:28166): Gdk-CRITICAL **: 05:33:57.682: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+
+(condor_exec.exe:28166): Gdk-CRITICAL **: 05:33:57.698: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
