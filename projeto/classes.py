@@ -9,6 +9,7 @@ class Antenna:
         self.gain = gain
         self.beams = beams
         self.beamwidth = 2*pi/self.beams
+
     def setFlatTop(self):
         #Considering an antenna pattern with -180 to 180 
         self.gain = [0 for i in range(360)]
@@ -18,6 +19,7 @@ class Antenna:
                 self.gain[i] = g1
             else:
                 self.gain[i] = 0
+
     def setConePlusCircle(self):
         self.gain = [0 for i in range(360)]
         for i in range(360):
@@ -27,6 +29,7 @@ class Antenna:
                 self.gain[i] = g1
             else:
                 self.gain[i] = g2
+
     #def setUCA():
     #transformar o ganho em um vetor com 360 elementos, um para cada grau ao 
     #redor do no
