@@ -136,12 +136,11 @@ def getReflectionEdges(transmitter, room):
     edge4 = math.atan2((room.width - transmitter.y), -transmitter.x)
     return [edge1,edge2,edge3,edge4]
 
-def getReflectionPoints(transmitter, room, angle, beam, order):
+def getReflectionPoints(transmitter, room, angle,order):
     #RETURNS A TUPLE WITH THE LENGTH OF REFLECTED PATH, THE POINT OF REFLECTION
     #AND THE EDGE WHICH REFLECTED. THE POSITION IN THE ARRAY IS ALSO THE ORDER
     #OF REFLECTION
     refOrd = order+1
-    rayCenter = beam2angle(transmitter,beam)
     corners = getReflectionEdges(transmitter, room)
 #    print([math.degrees(i) for i in corners])
 
@@ -182,3 +181,41 @@ def getReflectionPoints(transmitter, room, angle, beam, order):
         print("8")
 
     return [point, distance, refOrd]
+
+def buildReflections(transmitter, room, angle, nReflections):
+    reflectedPath = []
+    counter = 0
+    newAngle = angle
+    while counter>0:
+        if counter == 0:
+            reflectedPath.append(getReflectionPoints(transmitter, room, angle,counter))
+        else:
+            fakeNode = Node(reflectedPath[counter][0][0],reflectedPath[counter][0][1])
+            reflectedPath.append(getReflectionPoints(fakeNode, room, newAngle,counter))
+
+#def getObjectOnThePath(transmitter,room, refPoint):
+#    projections = []
+#    for obj in room.objects:
+#        maxX = 0
+#        maxY = 0
+#        minX = room.length
+#        minY = room.width
+#        for i in obj.corners:
+#            if i[0] > maxX:
+#                maxX = i[0]
+#            if i[0] < minX:
+#                minX = i[0]
+#            if i[1] > maxY:
+#                maxY = i[1]
+#            if i[1] < minY:
+#                minY = i[1]
+#        projections.append([minX,maxX,minY,maxY])
+#
+#    for p in projections:
+#        if refPoint[0][0] < transmitter.x:
+#            if refPoint[0][1]<transmitter.y:
+#            elif refPoint[0][1]>transmitter.y:
+#
+#        elif refPoint[0][0] > transmitter.x:
+#            if refPoint[0][1]<transmitter.y:
+#            elif refPoint[0][1]>transmitter.y:
