@@ -1,6 +1,7 @@
 import math
 from math import log
 import random
+from matplotlib import pyplot as plt
 
 pi = math.pi
 quarterPi = pi/4
@@ -43,6 +44,9 @@ class Antenna:
     #def setUCA():
     #transformar o ganho em um vetor com 360 elementos, um para cada grau ao 
     #redor do no
+    def plotAntennaPattern(self):
+        plt.plot([-180+i for i in range(360)],self.gain)
+        plt.show()
         
 class Node:
     def __init__(self,x,y):
@@ -172,26 +176,46 @@ def getReflectionPoints(transmitter, room, angle,order):
         print("6")
 
     elif (angle - twicePi) >= corners[1] and angle < twicePi:
-        point = [room.lenght, transmitter.y - (room.length - transmitter.x)*math.tan(twicePi-angle)]
+        point = [room.length, transmitter.y - (room.length - transmitter.x)*math.tan(twicePi-angle)]
         distance = (room.length - transmitter.x)/math.cos(twicePi - angle)
         print("7")
     elif angle >= 0 and angle < corners[2]:
         point = [room.length, transmitter.y + (room.width - transmitter.x)*math.tan(angle)]
         distance = (room.length - transmitter.x)/math.cos(angle)
         print("8")
+    else:
+        print("Nada!")
 
     return [point, distance, refOrd]
+
+def reflectionAngle(transmitter, room, point, angle):
+    if transmitter.y > point[0][1] and point[0][0]==0:
+        return twicePi - angle
+    elif transmitter.y < point[0][1] and point[0][0]==0:
+        return twicePi - (angle - pi)
+    elif transmitter.y > point[0][1] and point[0][0] == room.length:
+        return twicePi - (angle - pi)
+    elif transmitter.y < point[0][1] and point[0][0] == room.length:
+        return pi - angle
+    else:
+        return twicePi - angle
+
 
 def buildReflections(transmitter, room, angle, nReflections):
     reflectedPath = []
     counter = 0
     newAngle = angle
-    while counter>0:
+    while counter<nReflections:
         if counter == 0:
             reflectedPath.append(getReflectionPoints(transmitter, room, angle,counter))
         else:
-            fakeNode = Node(reflectedPath[counter][0][0],reflectedPath[counter][0][1])
-            reflectedPath.append(getReflectionPoints(fakeNode, room, newAngle,counter))
+            fakeNode = Node(reflectedPath[counter-1][0][0],reflectedPath[counter-1][0][1])
+            ### quem eh o new angle
+            newAngle = reflectionAngle(transmitter, room, reflectedPath[counter-1], newAngle)
+            reflectedPath.append(getReflectionPoints(fakeNode, room, newAngle, counter))
+        counter += 1
+    return reflectedPath
+            
 
 #def getObjectOnThePath(transmitter,room, refPoint):
 #    projections = []
