@@ -2,6 +2,7 @@ import math
 from math import log
 import random
 from matplotlib import pyplot as plt
+from scipy import special as sp
 
 pi = math.pi
 quarterPi = pi/4
@@ -41,9 +42,10 @@ class Antenna:
             else:
                 self.gain[i] = g2
 
-    #def setUCA():
+    def setUCA():
     #transformar o ganho em um vetor com 360 elementos, um para cada grau ao 
     #redor do no
+    
     def plotAntennaPattern(self):
         plt.plot([-180+i for i in range(360)],self.gain)
         plt.show()
