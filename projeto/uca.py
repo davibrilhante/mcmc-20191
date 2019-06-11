@@ -17,7 +17,7 @@ def ucaArrayFactor(nElements, freq, theta0, phi0, radius, theta, phi):
     ro = radius*math.sqrt(math.pow(parcel2,2)+math.pow(parcel1,2))
     arg = k*ro
     summ = 0
-    for m in range(1,100):
+    for m in range(1,200):
         summ+=(1j**(m*nElements))*sp.jv(m*nElements, arg)*math.cos(m*nElements*csi)
 
     af = abs(sp.jv(0,arg) - 2*summ)
@@ -44,7 +44,7 @@ def ucaAntennaGain(nElements, freq, theta0, phi0, radius, theta, phi):
             Mn += 1
     integral = 2*math.pow(pi,2)*(Mn/n)
     gain = 4*pi*math.pow(af,2)/integral
-    return gain
+    return 10*math.log10(gain)
 
 def ucaPlotGain(nElements,freq):
     gain = []
@@ -54,7 +54,7 @@ def ucaPlotGain(nElements,freq):
     theta = pi/2
     for i in range(-180,180):
         phi = math.radians(i)
-        gain.append(10*math.log10(ucaAntennaGain(nElements, freq, theta0, phi0, radius, theta, phi)))
+        gain.append(ucaAntennaGain(nElements, freq, theta0, phi0, radius, theta, phi))
     plt.plot([-180+i for i in range(360)],gain)
     plt.ylim(-5,15)
     plt.show()
@@ -71,6 +71,6 @@ def ucaPlotAf(nElements,freq):
     plt.plot([-180+i for i in range(360)],AF)
     plt.show()
 
-if __name__=="__main__":
-    ucaPlotAf(8,60e9)
-    ucaPlotGain(8,60e9)
+#if __name__=="__main__":
+#    ucaPlotAf(8,60e9)
+#    ucaPlotGain(8,60e9)

@@ -3,6 +3,8 @@ from math import log
 import random
 from matplotlib import pyplot as plt
 from scipy import special as sp
+import numpy as np
+import uca
 
 pi = math.pi
 quarterPi = pi/4
@@ -17,10 +19,14 @@ class Antenna:
         self.beams = beams
         self.beamwidth = 2*pi/self.beams
         self.resolution = 1
+        self.arrayFactor = []
+        self.nElements = 8 
         if Type=='FLAT_TOP':
             self.setFlatTop()
         elif Type=='CONE_PLUS_CIRCLE':
             self.setConePlusCircle()
+        elif Type=='UNIFORM_CIRCULAR_ARRAY':
+            self.setUCA()
 
     def setFlatTop(self):
         #Considering an antenna pattern with -180 to 180 
@@ -42,9 +48,10 @@ class Antenna:
             else:
                 self.gain[i] = g2
 
-    def setUCA():
-    #transformar o ganho em um vetor com 360 elementos, um para cada grau ao 
-    #redor do no
+    def setUCA(self,freq):
+        radius = (self.nElements*(3e8/freq))/(4*pi)
+        self.arrayFactor = [uca.ucaArrayFactor(self.nElements, freq, radius, halfPi, 0, halfPi, math.radians(i)) for i in range(-180,180)]
+        self.gain = [uca.ucaAntennaGain(self.nElements, freq, radius, halfPi, 0, halfPi, math.radians(i)) for i in range(-180,180)]
     
     def plotAntennaPattern(self):
         plt.plot([-180+i for i in range(360)],self.gain)
@@ -71,7 +78,14 @@ class Object:
         self.material = material
         self.nCorners = corners
         self.corner = []
-        self.loss = 42 #loss in db
+        if self.material == "plywood":
+            self.loss = 59 #loss in db
+        elif self.material == "aluminium":
+            self.loss = 56 #loss in db
+        elif self.material == "brickwall":
+            self.loss = 59 #loss in db
+        elif self.material == "body":
+            self.loss = 42 #loss in db
         self.heigth = 0
 
     def setCorners(self,cornerArray):
@@ -91,29 +105,46 @@ class Channel:
     - Each scattered path (in a given angle theta) has an delay
     - Received power and antenna gain pattern are functions of angle theta
     '''
-    def __init__(self):
+    def __init__(self,los):
         #path loss model
         self.largeScale = 'LOG_NORMAL_NO_SHADOW'
         #fading model
         self.smallScale = ''
+        if los == True:
+            self.shadowDeviation = 4.9 #in dB
+            self.plExponent = 2.1
+        else:
+            self.shadowDeviation = 7.6 #in dB
+            self.plExponent = 3.3
+
     def setType(self,channelType):
         self.model = channelType
     #def pathLoss(self):
-    def linkBudget(tx,rx,los):
-        if self.model == 'LOG_NORMAL_NO_SHADOW':
-            if los==True:
-                1
-            else:
-                1
-        elif self.model == 'LOG_NORMAL':
-            if los==True:
-                1
-            else:
-                1
-        elif self.model == 'TWO_RAY_RICE':
-            1
-        elif self.model == 'ONE_RAY_RICE':
-            1
+    def linkBudgetNode(tx,rx,freq):
+        comp = 3e8/freq
+        dist = math.hypot(tx.x-rx.x, tx.y-rx.y)
+        plRef = 20*log10(4*pi/comp)+10*self.plExponent*math.log10(dist)+np.random.norm(0,self.shadowDeviation) #+sum of obstacle attenuations
+        return plRef
+    def linkBudgetPoint(tx,pointx,pointy,freq):
+        comp = 3e8/freq
+        dist = math.hypot(tx.x-pointx, tx.y-pointy)
+        plRef = 20*log10(4*pi/comp)+10*self.plExponent*math.log10(dist)+np.random.norm(0,self.shadowDeviation) #+sum of obstacle attenuations
+        return plRef
+        
+
+#        largeScale = [np.random.randn() for i in range(7)]
+#        delaySpread = 10**(0.3*largeScale[0]-6.8)
+#        aodSpread = 10**(0.42*largeScale[1]+1.1)
+#        aoaSpread = 10**(0.36*largeScale[2]+1.3)
+#        zodSpread = 10**(0.32*largeScale[3]+max((-0.002*dist+1.05),0.4))
+#        zoaSpread = 10**(0.26*largeScale[4]+max((-0.0025*dist+1.1),0.3))
+#        zoaBias = 10**(0.3*largeScale[5]+max((-0.0022*dist+1.36),0.6))
+#        zoaSpread = 10**(0.3*largeScale[6]+max((-0.0017*dist+1.09),0.4))
+#        XPRS = 10**(np.random.normal(15,2)/10)
+#        if self.model == 'LOG_NORMAL_NO_SHADOW':
+#        elif self.model == 'LOG_NORMAL':
+#        elif self.model == 'TWO_RAY_RICE':
+#        elif self.model == 'ONE_RAY_RICE':
 
 def getQuadrant(angle):
     if angle>=0 and angle<= quarterPi:
@@ -217,6 +248,17 @@ def buildReflections(transmitter, room, angle, nReflections):
             reflectedPath.append(getReflectionPoints(fakeNode, room, newAngle, counter))
         counter += 1
     return reflectedPath
+
+
+def angleToPoint(transmitter, pointx, pointy):
+    angle = math.atan2(transmitter.y - pointy, transmitter.x - point.x)
+    if angle>= 0:
+        return angle
+    else:
+        return twicePi + angle
+
+def angleBetweenNodes(transmitter, receiver):
+    return angleToPoint(transmitter, receiver.x, receiver.y)
             
 
 #def getObjectOnThePath(transmitter,room, refPoint):

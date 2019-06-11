@@ -1,35 +1,40 @@
 import classes
-import math
+import numpy as np
 from matplotlib import pyplot as plt
+import math
 
-pi = math.pi
+freq = 60e9
+print("====================================\n.................Creating Nodes................")
+#create tx
+tx = classes.Node(1.0,5.0)
+tx.antenna.setUCA(freq)
 
-a1 = classes.Antenna()
-a1.setFlatTop()
-a2 = classes.Antenna()
-a2.setConePlusCircle()
+#create rx
+rx = classes.Node(9.0,5.0)
+rx.antenna.setUCA(freq)
 
-print(a1.gain)
-print(a2.gain)
+print("====================================\n.................Creating Room.................")
+#create Room
+room = classes.Room(10.0, 10.0)
 
+print("====================================\n................Creating Channel...............")
+#create channel
+los = True
+channel = classes.Channel(los)
 
-n1 = classes.Node(1,2)
-r1 = classes.Room(3,5)
-angles = [pi/4, 3*pi/4, 5*pi/4, 7*pi/4]
-#for a in angles:
-#    print(classes.getReflectionPoints(n1,r1,a,0))
+print("====================================\n.............Starting Simulation...............")
+samples = 10000
+result = [[0 for j in range(samples)] for i in range(samples)]
+for i in range(samples):
+    x = np.random.rand()*room.length
+    y = np.random.rand()*room.width
 
-reflections = classes.buildReflections(n1,r1,angles[3],3)
-print(reflections)
+    angleTx = classes.angleToPoint(tx,x,y) 
+    angleRx = classes.angleToPoint(rx,x,y)
+    gainTx = tx.antenna.gain[int(math.degrees(angleTx))]
+    loss = channel.linkBudgetPoint(tx,x,y,freq)
+    linkBudget = tx.txPower + gainTx - loss
+    result[x][y] = linkBudget
 
-x = [n1.x] + [i[0][0] for i in reflections]
-y = [n1.y] + [i[0][1] for i in reflections]
-
-print(x)
-print(y)
-
-
-plt.plot(x,y)
-plt.ylim(0,r1.width)
-plt.xlim(0, r1.length)
-plt.show()
+#plt.pcolor(result, cmap=plt.cm.Reds)
+#plt.show()
