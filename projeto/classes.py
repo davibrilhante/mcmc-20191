@@ -12,7 +12,7 @@ halfPi = pi/2
 threeHalfPi =3*pi/2
 twicePi = 2*pi 
 class Antenna:
-    def __init__(self,Type='FLAT_TOP', beams=8):
+    def __init__(self,Type='FLAT_TOP', beams=8,freq=60e9):
         self.type = Type
         self.gain = 0
         self.efficiency = 1
@@ -20,13 +20,13 @@ class Antenna:
         self.beamwidth = 2*pi/self.beams
         self.resolution = 1
         self.arrayFactor = []
-        self.nElements = 8 
+        self.nElements = 8
         if Type=='FLAT_TOP':
             self.setFlatTop()
         elif Type=='CONE_PLUS_CIRCLE':
             self.setConePlusCircle()
         elif Type=='UNIFORM_CIRCULAR_ARRAY':
-            self.setUCA()
+            self.setUCA(freq)
 
     def setFlatTop(self):
         #Considering an antenna pattern with -180 to 180 
@@ -50,8 +50,14 @@ class Antenna:
 
     def setUCA(self,freq):
         radius = (self.nElements*(3e8/freq))/(4*pi)
-        self.arrayFactor = [uca.ucaArrayFactor(self.nElements, freq, radius, halfPi, 0, halfPi, math.radians(i)) for i in range(-180,180)]
-        self.gain = [uca.ucaAntennaGain(self.nElements, freq, radius, halfPi, 0, halfPi, math.radians(i)) for i in range(-180,180)]
+        theta0 = halfPi
+        phi0 = 0
+        theta = halfPi
+        #self.arrayFactor = [uca.ucaArrayFactor(self.nElements, freq, radius, theta0, phi0, theta, math.radians(i)) for i in range(-180,180)]
+        self.gain = []
+        for i in range(-180,180):
+            phi = math.radians(i)
+            self.gain.append(uca.ucaAntennaGain(self.nElements, freq, theta0, phi0, radius, theta, phi))
     
     def plotAntennaPattern(self):
         plt.plot([-180+i for i in range(360)],self.gain)
@@ -120,15 +126,15 @@ class Channel:
     def setType(self,channelType):
         self.model = channelType
     #def pathLoss(self):
-    def linkBudgetNode(tx,rx,freq):
+    def linkBudgetNode(self,tx,rx,freq):
         comp = 3e8/freq
         dist = math.hypot(tx.x-rx.x, tx.y-rx.y)
-        plRef = 20*log10(4*pi/comp)+10*self.plExponent*math.log10(dist)+np.random.norm(0,self.shadowDeviation) #+sum of obstacle attenuations
+        plRef = 20*math.log10(4*pi/comp)+10*self.plExponent*math.log10(dist)+np.random.normal(0,self.shadowDeviation) #+sum of obstacle attenuations
         return plRef
-    def linkBudgetPoint(tx,pointx,pointy,freq):
+    def linkBudgetPoint(self,tx,pointx,pointy,freq):
         comp = 3e8/freq
         dist = math.hypot(tx.x-pointx, tx.y-pointy)
-        plRef = 20*log10(4*pi/comp)+10*self.plExponent*math.log10(dist)+np.random.norm(0,self.shadowDeviation) #+sum of obstacle attenuations
+        plRef = (20*math.log10(4*pi/comp))+(10*self.plExponent*math.log10(dist))+np.random.normal(0,self.shadowDeviation) #+sum of obstacle attenuations
         return plRef
         
 
@@ -251,7 +257,7 @@ def buildReflections(transmitter, room, angle, nReflections):
 
 
 def angleToPoint(transmitter, pointx, pointy):
-    angle = math.atan2(transmitter.y - pointy, transmitter.x - point.x)
+    angle = math.atan2(transmitter.y - pointy, transmitter.x - pointx)
     if angle>= 0:
         return angle
     else:
