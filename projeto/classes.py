@@ -61,6 +61,8 @@ class Antenna:
     
     def plotAntennaPattern(self):
         plt.plot([-180+i for i in range(360)],self.gain)
+        plt.ylim(-4,15)
+        plt.ylabel("Gain(dB)")
         plt.show()
         
 class Node:
