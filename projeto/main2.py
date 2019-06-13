@@ -27,8 +27,8 @@ rx.antenna.gain = rx.antenna.gain[270:] + rx.antenna.gain[:270]
 print("===============================================\n.................Creating Room.................")
 #create Room
 room = classes.Room(150.0, 150.0)
-interferers = interference.createInterferer(room,10)
-status = interference.hardcoreModel(interferers, 100)
+#interferers = interference.createInterferer(room,10)
+#status = interference.hardcoreModel(interferers, 100)
 
 print("===============================================\n................Creating Channel...............")
 #create channel
@@ -42,37 +42,37 @@ leng = 100
 result = [[0 for j in range(leng)] for i in range(leng)]
 
 start_time = time.time()
-for i in range(samples):
-    x = np.random.rand()*room.length
-    y = np.random.rand()*room.width
+for i in range(100):
+    for j in range(100):
+        if j == 50 and i == 50:
+            continue
+        x = 1.5*i#np.random.rand()*room.length
+        y = 1.5*j#np.random.rand()*room.width
 
-    angleTx = classes.angleToPoint(tx,x,y) 
-    angleRx = classes.angleToPoint(rx,x,y)
-    gainTx = tx.antenna.gain[180+int(math.degrees(angleTx))]
-    gainRx = rx.antenna.gain[180+int(math.degrees(angleRx))]
-    loss = channel.linkBudgetPoint(tx,x,y,freq)
-    linkBudget = tx.txPower + gainTx + gainRx - loss
-    pInterfer = 0
-#    for j in range(nInterfer):
-#        intNode = classes.Node(np.random.rand()*room.length, np.random.rand()*room.width)
-#        angleInt = classes.angleToPoint(intNode,x,y)
-#        intNode.antenna = antenna
-#        randomAngle = np.random.rand()*360
-#        intNode.antenna.gain = intNode.antenna.gain[randomAngle:] + intNode.antenna.gain[:randomAngle]
-#        gainNode = intNode.antenna.gain[180+int(math.degrees(angleInt))]
-#        lossInt = channel.linkBudgetPoint(intNode,x,y,freq)
-#        pInterfer += intNode.txPower + gainNode + gainRx - lossInt
-    for m in range(len(status)):
-        for n in range(len(status[m])):
-            if status[m][n] == 1:
-                angleInt = classes.angleToPoint(interferers[m][n],x,y)
-                randomAngle = int(np.random.rand()*360)
-                interferers[m][n].antenna.gain = interferers[m][n].antenna.gain[randomAngle:] + interferers[m][n].antenna.gain[:randomAngle]
-                gainNode = interferers[m][n].antenna.gain[180+int(math.degrees(angleInt))]
-                lossInt = channel.linkBudgetPoint(interferers[m][n],x,y,freq)
-                pInterfer += interferers[m][n].txPower + gainNode + gainRx - lossInt
-#                
-    result[int(x*leng/(room.length))][int(y*leng/room.width)] = linkBudget + pInterfer
+        angleTx = classes.angleToPoint(tx,x,y) 
+        angleRx = classes.angleToPoint(rx,x,y)
+        if round(angleTx,1) == round(2*math.pi,1): angleTx = 0
+        if round(angleRx,1) == round(2*math.pi,1): angleRx = 0
+        print(angleTx, angleRx)
+        gainTx = tx.antenna.gain[180+int(math.degrees(angleTx))]
+        gainRx = rx.antenna.gain[180+int(math.degrees(angleRx))]
+        loss = channel.linkBudgetPoint(tx,x,y,freq)
+        linkBudget = tx.txPower + gainTx + gainRx - loss
+        pInterfer = 0
+    #    for j in range(nInterfer):
+    #        intNode = classes.Node(np.random.rand()*room.length, np.random.rand()*room.width)
+    #        angleInt = classes.angleToPoint(intNode,x,y)
+    #        intNode.antenna = antenna
+    #        randomAngle = np.random.rand()*360
+    #        intNode.antenna.gain = intNode.antenna.gain[randomAngle:] + intNode.antenna.gain[:randomAngle]
+    #        gainNode = intNode.antenna.gain[180+int(math.degrees(angleInt))]
+    #        lossInt = channel.linkBudgetPoint(intNode,x,y,freq)
+    #        pInterfer += intNode.txPower + gainNode + gainRx - lossInt
+    #    for m in range(len(status)):
+    #        for n in range(len(status[m])):
+    #            if status[m][n] == 1:
+    #                
+        result[int(x*leng/(room.length))][int(y*leng/room.width)] = linkBudget
 
 print(time.time() - start_time)
 

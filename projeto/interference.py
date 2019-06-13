@@ -26,25 +26,32 @@ def hardcoreModel(interferers, mixture):
                     if j==0:
                         if status[i][j+1]==0 and status[i+1][j]==0:
                             status[i][j]=1
-                    elif j==len(interferers[i]):
+                    elif j==len(interferers[i])-1:
                         if status[i][j-1]==0 and status[i+1][j]==0:
                             status[i][j]=1
                     else:
                         if status[i][j-1]==0 and status[i][j+1]==0 and status[i+1][j]==0:
                             status[i][j]=1
-                elif i==len(interferers):
+                elif i==len(interferers)-1:
                     if j==0:
                         if status[i][j+1]==0 and status[i-1][j]==0:
                             status[i][j]=1
-                    elif j==len(interferers[i]):
+                    elif j==len(interferers[i])-1:
                         if status[i][j-1]==0 and status[i-1][j]==0:
                             status[i][j]=1
                     else:
                         if status[i][j-1]==0 and status[i][j+1]==0 and status[i-1][j]==0:
                             status[i][j]=1
                 else:
-                    if status[i][j-1]==0 and status[i][j+1]==0 and status[i+1][j]==0 and status[i-1][j]==0:
-                        status[i][j]=1
+                    if j == 0:
+                        if status[i][j+1]==0 and status[i+1][j]==0 and status[i-1][j]==0:
+                            status[i][j] = 1
+                    if j == len(interferers[i])-1:
+                        if status[i][j-1]==0 and status[i+1][j]==0 and status[i-1][j]==0:
+                            status[i][j] = 1
+                    else:
+                        if status[i][j-1]==0 and status[i][j+1]==0 and status[i+1][j]==0 and status[i-1][j]==0:
+                            status[i][j]=1
                 
         elif status[i][j]==1:
             if np.random.rand()>0.5:
