@@ -14,17 +14,18 @@ print(time.time() - start_time)
 
 print("===============================================\n.................Creating Nodes................")
 #create tx
-tx = classes.Node(1.0,5.0)
+tx = classes.Node(75.0,75.0)
 tx.antenna = antenna
-
+tx.antenna.gain = tx.antenna.gain[180:] + tx.antenna.gain[:180]
 #create rx
-rx = classes.Node(9.0,5.0)
+rx = classes.Node(75.0,135.0)
 rx.antenna = antenna
+rx.antenna.gain = rx.antenna.gain[270:] + rx.antenna.gain[:270]
 
 
 print("===============================================\n.................Creating Room.................")
 #create Room
-room = classes.Room(10.0, 10.0)
+room = classes.Room(150.0, 150.0)
 
 print("===============================================\n................Creating Channel...............")
 #create channel
@@ -33,6 +34,7 @@ channel = classes.Channel(los)
 
 print("===============================================\n.............Starting Simulation...............")
 samples = 10000
+nInterfer = 5
 leng = 100
 result = [[0 for j in range(leng)] for i in range(leng)]
 for i in range(samples):
@@ -41,9 +43,20 @@ for i in range(samples):
 
     angleTx = classes.angleToPoint(tx,x,y) 
     angleRx = classes.angleToPoint(rx,x,y)
-    gainTx = tx.antenna.gain[int(math.degrees(angleTx))]
+    gainTx = tx.antenna.gain[180+int(math.degrees(angleTx))]
+    gainRx = rx.antenna.gain[180+int(math.degrees(angleRx))]
     loss = channel.linkBudgetPoint(tx,x,y,freq)
-    linkBudget = tx.txPower + gainTx - loss
+    linkBudget = tx.txPower + gainTx + gainRx - loss
+    pInterfer = 0
+    for j in range(nInterfer):
+        intNode = classes.Node(np.random.rand()*room.length, np.random.rand()*room.width)
+        angleInt = classes.angleToPoint(intNode,x,y)
+        intNode.antenna = antenna
+        randomAngle = np.random.rand()*360
+        intNode.antenna.gain = intNode.antenna.gain[randomAngle:] + intNode.antenna.gain[:randomAngle]
+        gainNode = intNode.antenna.gain[180+int(math.degrees(angleInt))]
+        lossInt = channel.linkBudgetPoint(intNode,x,y,freq)
+        pInterfer += intNode.txPower + gainNode + gainRx - lossInt
     result[int(x*leng/(room.length))][int(y*leng/room.width)] = linkBudget
 
 maxs = [max(i) for i in result]
@@ -58,6 +71,8 @@ for i in range(leng):
         result[i][j] = (result[i][j] - minmin)/(maxmax - minmin)
 
 c = plt.pcolor(result, cmap='jet')
-plt.colorbar(c) 
+cb = plt.colorbar(c)#, ticks=[minmin + i*((maxmax - minmin)/5) for i in range(5)]) 
+cb.set_ticks([0 + i*0.2 for i in range(6)], update_ticks=True)
+cb.set_ticklabels([round(minmin + i*((maxmax - minmin)/5),2) for i in range(6)], update_ticks=True)
 plt.show()
-print(result)
+#print(result)

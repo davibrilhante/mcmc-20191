@@ -46,8 +46,8 @@ def ucaAntennaGain(nElements, freq, theta0, phi0, radius, theta, phi):
 
     af = ucaArrayFactor(nElements, freq, theta0, phi0, radius, theta, phi)
 
-#    Mn = 0
     n = 1000
+#    Mn = 0
 #    for i in range(n):
 #        u = random.rand()
 #        p = random.rand()*pi

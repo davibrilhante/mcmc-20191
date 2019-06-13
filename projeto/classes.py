@@ -258,10 +258,10 @@ def buildReflections(transmitter, room, angle, nReflections):
 
 def angleToPoint(transmitter, pointx, pointy):
     angle = math.atan2(transmitter.y - pointy, transmitter.x - pointx)
-    if angle>= 0:
-        return angle
-    else:
-        return twicePi + angle
+#    if angle>= 0:
+    return angle
+#    else:
+#        return twicePi + angle
 
 def angleBetweenNodes(transmitter, receiver):
     return angleToPoint(transmitter, receiver.x, receiver.y)
